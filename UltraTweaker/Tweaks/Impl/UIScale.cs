@@ -1,13 +1,8 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
+using PluginConfig.API;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -25,25 +20,19 @@ namespace UltraTweaker.Tweaks.Impl
         private static GameObject _style;
         private static GameObject _results;
 
-        public UIScale()
+        private static SubSettingsCreator.IntSettingValues infoHudScale = new(0, 110, 100);
+        private static SubSettingsCreator.IntSettingValues styleHudScale = new(0, 110, 100);
+        private static SubSettingsCreator.IntSettingValues finalrankHudScale = new(0, 110, 100);
+        private static SubSettingsCreator.IntSettingValues bossbarHudScale = new(0, 100, 100);
+        private static SubSettingsCreator.IntSettingValues canvasScale = new(25, 100, 100);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "info_hud_scale", new IntSubsetting(this, new("Info HUD Scale", "info_hud_scale", "The size of the info, e.g. health and stamina."), 
-                    new SliderIntSubsettingElement("{0}%"), 100, 110, 0) },
-
-                { "style_hud_scale", new IntSubsetting(this, new("Style HUD Scale", "style_hud_scale", "The size of the style panel."), 
-                    new SliderIntSubsettingElement("{0}%"), 100, 110, 0) },
-
-                { "finalrank_hud_scale", new IntSubsetting(this, new("End HUD Scale", "finalrank_hud_scale", "The size of the panel that shows your final rank."), 
-                    new SliderIntSubsettingElement("{0}%"), 100, 110, 0) },
-
-                { "bossbar_hud_scale", new IntSubsetting(this, new("Boss Bar Scale", "bossbar_hud_scale", "The size of the boss bar."), 
-                    new SliderIntSubsettingElement("{0}%"), 100, 100, 0) },
-
-                { "canvas_scale", new IntSubsetting(this, new("Canvas Scale", "canvas_scale", "The size of the info, e.g. health and stamina."), 
-                    new SliderIntSubsettingElement("{0}%"), 100, 100, 25) }
-            };
+            SubSettingsCreator.CreateInt(this, "Info HUD Scale", division, infoHudScale);
+            SubSettingsCreator.CreateInt(this, "Style HUD Scale", division, styleHudScale);
+            SubSettingsCreator.CreateInt(this, "End HUD Scale", division, finalrankHudScale);
+            SubSettingsCreator.CreateInt(this, "Boss Bar Scale", division, bossbarHudScale);
+            SubSettingsCreator.CreateInt(this, "Canvas Scale", division, canvasScale);
         }
 
         public override void OnTweakEnabled()
@@ -93,9 +82,9 @@ namespace UltraTweaker.Tweaks.Impl
 
             if (!(_info == null || _style == null || _results == null))
             {
-                float InfoScale = GetInstance<UIScale>().Subsettings["info_hud_scale"].GetValue<int>();
-                float StyleScale = GetInstance<UIScale>().Subsettings["style_hud_scale"].GetValue<int>();
-                float ResultsScale = GetInstance<UIScale>().Subsettings["finalrank_hud_scale"].GetValue<int>();
+                float InfoScale = infoHudScale.Value;
+                float StyleScale = styleHudScale.Value;
+                float ResultsScale =finalrankHudScale.Value;
 
                 if (!toDefault)
                 {
@@ -114,7 +103,7 @@ namespace UltraTweaker.Tweaks.Impl
 
         public static void UpdateCanvas(bool toDefault = false)
         {
-            float CanvasScale = GetInstance<UIScale>().Subsettings["canvas_scale"].GetValue<int>();
+            float CanvasScale = canvasScale.Value;
 
             if (CanvasScale != 100)
             {
@@ -167,7 +156,7 @@ namespace UltraTweaker.Tweaks.Impl
             [HarmonyPostfix]
             static void PatchBossbarScale(BossHealthBar __instance)
             {
-                float barScale = GetInstance<UIScale>().Subsettings["bossbar_hud_scale"].GetValue<int>();
+                float barScale = bossbarHudScale.Value;
                 __instance.transform.localScale *= barScale / 100;
             }
         }

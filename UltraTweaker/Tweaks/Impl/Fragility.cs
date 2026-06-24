@@ -1,12 +1,5 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
-using UnityEngine;
-using UltraTweaker.UIElements.Impl;
+using PluginConfig.API;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -15,13 +8,11 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private Harmony _harmony = new($"{UltraTweaker.GUID}.mutator_fragility");
 
-        public Fragility()
+        private static SubSettingsCreator.IntSettingValues maxHealth = new(1, 100, 25);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "max_health", new IntSubsetting(this, new Metadata("Max Health", "max_health", "Maximum player health."),
-                    new SliderIntSubsettingElement("{0}"), 25, 100, 1) }
-            };
+            SubSettingsCreator.CreateInt(this, "HP", division, maxHealth);
         }
 
         public override void OnTweakEnabled()
@@ -41,7 +32,7 @@ namespace UltraTweaker.Tweaks.Impl
             [HarmonyPatch(typeof(NewMovement), nameof(NewMovement.Update)), HarmonyPostfix]
             private static void LimitHp(NewMovement __instance)
             {
-                int thing = GetInstance<Fragility>().Subsettings["max_health"].GetValue<int>();
+                int thing = maxHealth.Value;
 
                 if (__instance.antiHp < 100 - thing)
                 {

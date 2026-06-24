@@ -1,9 +1,5 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
-using UltraTweaker.UIElements.Impl;
+using PluginConfig.API;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -12,13 +8,11 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private Harmony _harmony = new($"{UltraTweaker.GUID}.mutator_ice");
 
-        public Ice()
+        private static SubSettingsCreator.FloatSettingValues Slippyness = new(0, 0.5f, 0.1f);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "slippyness", new FloatSubsetting(this, new Metadata("Friction", "slippyness", "How grippy you are."),
-                    new SliderFloatSubsettingElement("{0}", 2), 0.1f, 0.5f, 0) }
-            };
+            SubSettingsCreator.CreateFloat(this, "Friction", division, Slippyness);
         }
 
         public override void OnTweakEnabled()
@@ -36,7 +30,7 @@ namespace UltraTweaker.Tweaks.Impl
 
         public override void OnSubsettingUpdate()
         {
-            NewMovement.Instance.modForcedFrictionMultip = GetInstance<Ice>().Subsettings["slippyness"].GetValue<float>();
+            NewMovement.Instance.modForcedFrictionMultip = Slippyness.Value;
         }
 
         public static class IcePatches
@@ -45,7 +39,7 @@ namespace UltraTweaker.Tweaks.Impl
             [HarmonyPostfix]
             public static void IcePlayer(NewMovement __instance)
             {
-                __instance.modForcedFrictionMultip = GetInstance<Ice>().Subsettings["slippyness"].GetValue<float>();
+                __instance.modForcedFrictionMultip = Slippyness.Value;
             }
         }
     }

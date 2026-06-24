@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyName>UltraTweaker</AssemblyName>
     <Description>Tweaks your Ultra.</Description>
     <Version>1.0.0</Version>
 	<LangVersion>11</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>C:\Users\mkols\source\repos\UltraTweaker\UltraTweaker\bin\Release\netstandard2.0\UltraTweaker.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,10 +17,6 @@
     <EmbeddedResource Remove="Skill Tree\**" />
     <None Remove="Editor\**" />
     <None Remove="Skill Tree\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
@@ -76,6 +70,12 @@
     </Reference>
     <Reference Include="NavMeshComponents">
       <HintPath>Libs\Managed\NavMeshComponents.dll</HintPath>
+    </Reference>
+    <Reference Include="PluginConfigurator">
+      <HintPath>Libs\PluginConfigurator.dll</HintPath>
+    </Reference>
+    <Reference Include="PluginConfiguratorComponents">
+      <HintPath>Libs\PluginConfiguratorComponents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
       <HintPath>Libs\Managed\Unity.Addressables.dll</HintPath>

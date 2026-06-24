@@ -1,12 +1,5 @@
-﻿using HarmonyLib;
-using System;
+﻿using PluginConfig.API;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
-using UltraTweaker.UIElements.Impl;
 using UnityEngine;
 
 namespace UltraTweaker.Tweaks.Impl
@@ -16,22 +9,17 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private float _toRemove = 0;
 
-        public Fresh()
+        private static SubSettingsCreator.IntSettingValues fresh = new(0, 100, 0);
+        private static SubSettingsCreator.IntSettingValues used = new(0, 100, 4);
+        private static SubSettingsCreator.IntSettingValues stale = new(0, 100, 8);
+        private static SubSettingsCreator.IntSettingValues dull = new(0, 31000, 12);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "fresh", new IntSubsetting(this, new Metadata("FRESH", "fresh", "HP drained per second on Fresh."),
-                    new SliderIntSubsettingElement("{0}"), 0, 100, 0) },
-
-                { "used", new IntSubsetting(this, new Metadata("USED", "used", "HP drained per second on Used."),
-                    new SliderIntSubsettingElement("{0}"), 0, 100, 4) },
-
-                { "stale", new IntSubsetting(this, new Metadata("STALE", "stale", "HP drained per second on Stale."),
-                    new SliderIntSubsettingElement("{0}"), 0, 100, 8) },
-
-                { "dull", new IntSubsetting(this, new Metadata("DULL", "dull", "HP drained per second on Dull."),
-                    new SliderIntSubsettingElement("{0}"), 0, 100, 12) }
-            };
+            SubSettingsCreator.CreateInt(this, "Fresh", division, fresh);
+            SubSettingsCreator.CreateInt(this, "Used", division, used);
+            SubSettingsCreator.CreateInt(this, "Stale", division, stale);
+            SubSettingsCreator.CreateInt(this, "Dull", division, dull);
         }
 
         public override void OnTweakEnabled()
@@ -48,10 +36,10 @@ namespace UltraTweaker.Tweaks.Impl
         {
             Dictionary<StyleFreshnessState, float> dict = new Dictionary<StyleFreshnessState, float>()
             {
-                { StyleFreshnessState.Fresh, Subsettings["fresh"].GetValue<int>() },
-                { StyleFreshnessState.Used, Subsettings["used"].GetValue<int>() },
-                { StyleFreshnessState.Stale, Subsettings["stale"].GetValue<int>() },
-                { StyleFreshnessState.Dull, Subsettings["dull"].GetValue<int>() }
+                { StyleFreshnessState.Fresh, fresh.Value },
+                { StyleFreshnessState.Used, used.Value },
+                { StyleFreshnessState.Stale, stale.Value },
+                { StyleFreshnessState.Dull, dull.Value }
             };
 
             if (NewMovement.Instance != null && StatsManager.Instance.timer && GunControl.Instance.activated)

@@ -1,13 +1,5 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
-using UnityEngine;
-using UnityEngine.AI;
-using UltraTweaker.UIElements.Impl;
+using PluginConfig.API;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -17,21 +9,18 @@ namespace UltraTweaker.Tweaks.Impl
         private Harmony _harmony = new($"{UltraTweaker.GUID}.mutator_speed");
         private static float _startSpeed = 0;
 
-        public Speed()
-        {
-            Subsettings = new()
-            {
-                { "player_speed_mult", new FloatSubsetting(this, new Metadata("Player Speed", "player_speed_mult", "Speed multiplier for the player."),
-                    new SliderFloatSubsettingElement("{0}x"), 2, 10, 0) },
+        private static SubSettingsCreator.FloatSettingValues playerSpeedMult = new(0, 10, 2);
+        private static SubSettingsCreator.FloatSettingValues enemySpeedMult = new(0, 10, 2);
 
-                { "enemy_speed_mult", new FloatSubsetting(this, new Metadata("Enemy Speed", "enemy_speed_mult", "Speed multiplier for the enemies."),
-                    new SliderFloatSubsettingElement("{0}x"), 2, 10, 0) }
-            };
+        public override void CreateSubSettingsUI(ConfigDivision division)
+        {
+            SubSettingsCreator.CreateFloat(this, "Player Speed", division, playerSpeedMult);
+            SubSettingsCreator.CreateFloat(this, "Enemy Speed", division, enemySpeedMult);
         }
 
         public override void OnSubsettingUpdate()
         {
-            NewMovement.Instance.walkSpeed = _startSpeed * Subsettings["player_speed_mult"].GetValue<float>();
+            NewMovement.Instance.walkSpeed = _startSpeed * playerSpeedMult.Value;
         }
 
         public override void OnTweakEnabled()
@@ -41,7 +30,7 @@ namespace UltraTweaker.Tweaks.Impl
             if (NewMovement.Instance != null)
             {
                 _startSpeed = NewMovement.Instance.walkSpeed;
-                NewMovement.Instance.walkSpeed = _startSpeed * GetInstance<Speed>().Subsettings["player_speed_mult"].GetValue<float>();
+                NewMovement.Instance.walkSpeed = _startSpeed * playerSpeedMult.Value;
             }
 
             _harmony.PatchAll(typeof(SpeedPatches));
@@ -65,13 +54,13 @@ namespace UltraTweaker.Tweaks.Impl
             public static void SpeedPlayer(NewMovement __instance)
             {
                 _startSpeed = __instance.walkSpeed;
-                __instance.walkSpeed = _startSpeed * GetInstance<Speed>().Subsettings["player_speed_mult"].GetValue<float>();
+                __instance.walkSpeed = _startSpeed * playerSpeedMult.Value;
             }
 
             [HarmonyPatch(typeof(EnemyIdentifier), nameof(EnemyIdentifier.Start)), HarmonyPostfix]
             public static void SpeedEnemy(EnemyIdentifier __instance)
             {
-                float mult = GetInstance<Speed>().Subsettings["enemy_speed_mult"].GetValue<float>();
+                float mult = enemySpeedMult.Value;
 
                 if (!__instance.speedBuff)
                 {

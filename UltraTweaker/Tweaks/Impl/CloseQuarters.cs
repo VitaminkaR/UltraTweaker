@@ -1,10 +1,6 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
+using PluginConfig.API;
 using UnityEngine;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -13,14 +9,7 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private Harmony _harmony = new($"{UltraTweaker.GUID}.mutator_close_quarters");
 
-        public CloseQuarters()
-        {
-            Subsettings = new()
-            {
-                { "enemy_distance", new IntSubsetting(this, new Metadata("Distance", "enemy_distance", "Distance to bless at."),
-                    new SliderIntSubsettingElement("{0}m"), 15, 30, 5) }
-            };
-        }
+        private static SubSettingsCreator.IntSettingValues enemyDistance = new(5, 30, 15);
 
         public override void OnTweakEnabled()
         {
@@ -32,6 +21,11 @@ namespace UltraTweaker.Tweaks.Impl
         {
             base.OnTweakDisabled();
             _harmony.UnpatchSelf();
+        }
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
+        {
+            SubSettingsCreator.CreateInt(this, "Enemy Distance", division, enemyDistance);
         }
 
         public static class DistancePatches
@@ -54,8 +48,7 @@ namespace UltraTweaker.Tweaks.Impl
 
             public void Update()
             {
-                if (Vector3.Distance(transform.position, NewMovement.Instance.transform.position)
-                    > GetInstance<CloseQuarters>().Subsettings["enemy_distance"].GetValue<int>())
+                if (Vector3.Distance(transform.position, NewMovement.Instance.transform.position) > enemyDistance.Value)
                 {
                     if (!eid.blessed)
                     {

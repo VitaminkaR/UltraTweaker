@@ -1,10 +1,5 @@
-﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
+﻿using PluginConfig.API;
 using UnityEngine;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -14,16 +9,13 @@ namespace UltraTweaker.Tweaks.Impl
         private float _toRemove = 0;
         private float _onFloorFor;
 
-        public FloorIsLava()
-        {
-            Subsettings = new()
-            {
-                 { "damage_after", new FloatSubsetting(this, new Metadata("Damage After", "damage_after", "Time before damage starts."),
-                    new SliderFloatSubsettingElement("{0}s"), 0.1f, 5, 0) },
+        private static SubSettingsCreator.FloatSettingValues damageAfter = new(0, 5, 0.1f);
+        private static SubSettingsCreator.IntSettingValues damagePerSecond = new(0, 100, 25);
 
-                { "damage_per_second", new IntSubsetting(this, new Metadata("Damage Per Second", "damage_per_second", "Damage per second."),
-                    new SliderIntSubsettingElement("{0}"), 25, 100, 0) }
-            };
+        public override void CreateSubSettingsUI(ConfigDivision division)
+        {
+            SubSettingsCreator.CreateFloat(this, "Damage After", division, damageAfter);
+            SubSettingsCreator.CreateInt(this, "Damage Per Second", division, damagePerSecond);
         }
 
         public override void OnTweakEnabled()
@@ -49,9 +41,9 @@ namespace UltraTweaker.Tweaks.Impl
                     _onFloorFor = 0;
                 }
 
-                if (StatsManager.Instance.timer && _onFloorFor > Subsettings["damage_after"].GetValue<float>())
+                if (StatsManager.Instance.timer && _onFloorFor > damageAfter.Value)
                 {
-                    _toRemove += Time.deltaTime * Subsettings["damage_per_second"].GetValue<int>();
+                    _toRemove += Time.deltaTime * damagePerSecond.Value;
 
                     if ((int)_toRemove >= 1)
                     {

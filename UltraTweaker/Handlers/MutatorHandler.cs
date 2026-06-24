@@ -1,9 +1,6 @@
 ﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UltraTweaker.Subsettings;
 using UltraTweaker.Tweaks;
 using UnityEngine;
 
@@ -48,35 +45,35 @@ namespace UltraTweaker.Handlers
                     if (tw.IsEnabled)
                     {
                         TweakMetadata tm = Attribute.GetCustomAttribute(tw.GetType(), typeof(TweakMetadata)) as TweakMetadata;
-                        if (tm.IsMutator)
-                        {
-                            string props = "";
-                            limitPerLine += 1;
-                            foreach (Subsetting sub in tw.Subsettings.Values)
-                            {
+                        //if (tm.IsMutator)
+                        //{
+                        //    string props = "";
+                        //    limitPerLine += 1;
+                        //    foreach (Subsetting sub in tw.Subsettings.Values)
+                        //    {
 
-                                props += sub.Serialize();
-                                if (sub != tw.Subsettings.Values.Last())
-                                {
-                                    props += ", ";
-                                }
-                            }
+                        //        props += sub.Serialize();
+                        //        if (sub != tw.Subsettings.Values.Last())
+                        //        {
+                        //            props += ", ";
+                        //        }
+                        //    }
 
-                            if (tw.Subsettings.Values.Count > 0)
-                            {
-                                data += $"[{tm.Name}: {props}] ";
-                            }
-                            else
-                            {
-                                data += $"[{tm.Name}] ";
-                            }
+                        //    if (tw.Subsettings.Values.Count > 0)
+                        //    {
+                        //        data += $"[{tm.Name}: {props}] ";
+                        //    }
+                        //    else
+                        //    {
+                        //        data += $"[{tm.Name}] ";
+                        //    }
 
-                            if (limitPerLine == 4 && tw == UltraTweaker.AllTweaks.Values.Last())
-                            {
-                                data += "\n";
-                                limitPerLine = 0;
-                            }
-                        }
+                        //    if (limitPerLine == 4 && tw == UltraTweaker.AllTweaks.Values.Last())
+                        //    {
+                        //        data += "\n";
+                        //        limitPerLine = 0;
+                        //    }
+                        //}
                     }
                 }
 
@@ -88,34 +85,34 @@ namespace UltraTweaker.Handlers
                 }
             }
 
-            [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.StartTimer)), HarmonyPostfix]
-            public static void DisableMutators()
-            {
-                if (!CheatsController.Instance.cheatsEnabled)
-                {
-                    foreach (Tweak tw in UltraTweaker.AllTweaks.Values)
-                    {
-                        TweakMetadata meta = Attribute.GetCustomAttribute(tw.GetType(), typeof(TweakMetadata)) as TweakMetadata;
-                        if (meta.IsMutator)
-                        {
-                            tw.SetControls(false);
-                        }
-                    }
-                }
-            }
+            //[HarmonyPatch(typeof(StatsManager), nameof(StatsManager.StartTimer)), HarmonyPostfix]
+            //public static void DisableMutators()
+            //{
+            //    if (!CheatsController.Instance.cheatsEnabled)
+            //    {
+            //        foreach (Tweak tw in UltraTweaker.AllTweaks.Values)
+            //        {
+            //            TweakMetadata meta = Attribute.GetCustomAttribute(tw.GetType(), typeof(TweakMetadata)) as TweakMetadata;
+            //            if (meta.IsMutator)
+            //            {
+            //                tw.SetControls(false);
+            //            }
+            //        }
+            //    }
+            //}
 
-            [HarmonyPatch(typeof(CheatsController), nameof(CheatsController.ActivateCheats)), HarmonyPostfix]
-            public static void EnableOnCheats()
-            {
-                foreach (Tweak tw in UltraTweaker.AllTweaks.Values)
-                {
-                    TweakMetadata meta = Attribute.GetCustomAttribute(tw.GetType(), typeof(TweakMetadata)) as TweakMetadata;
-                    if (meta.IsMutator)
-                    {
-                        tw.SetControls(true);
-                    }
-                }
-            }
+            //[HarmonyPatch(typeof(CheatsController), nameof(CheatsController.ActivateCheats)), HarmonyPostfix]
+            //public static void EnableOnCheats()
+            //{
+            //    foreach (Tweak tw in UltraTweaker.AllTweaks.Values)
+            //    {
+            //        TweakMetadata meta = Attribute.GetCustomAttribute(tw.GetType(), typeof(TweakMetadata)) as TweakMetadata;
+            //        if (meta.IsMutator)
+            //        {
+            //            tw.SetControls(true);
+            //        }
+            //    }
+            //}
         }
     }
 }

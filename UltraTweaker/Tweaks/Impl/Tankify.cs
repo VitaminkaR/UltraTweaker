@@ -1,13 +1,5 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
-using UnityEngine;
-using UnityEngine.UI;
-using UltraTweaker.UIElements.Impl;
+using PluginConfig.API;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -16,13 +8,11 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private Harmony _harmony = new($"{UltraTweaker.GUID}.mutator_tankify");
 
-        public Tankify()
+        private static SubSettingsCreator.FloatSettingValues multiplier = new(0, 10, 2);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "multiplier", new FloatSubsetting(this, new Metadata("Health Multplier", "multiplier", "Enemy health multiplier."),
-                    new SliderFloatSubsettingElement("{0}"), 2, 10, 0) }
-            };
+            SubSettingsCreator.CreateFloat(this, "Health Multplier", division, multiplier);
         }
 
         public override void OnTweakEnabled()
@@ -42,7 +32,7 @@ namespace UltraTweaker.Tweaks.Impl
             [HarmonyPatch(typeof(EnemyIdentifier), nameof(EnemyIdentifier.Start)), HarmonyPostfix]
             public static void IncreaseHealth(EnemyIdentifier __instance)
             {
-                float mult = GetInstance<Tankify>().Subsettings["multiplier"].GetValue<float>();
+                float mult = multiplier.Value;
 
                 if (!__instance.healthBuff)
                 {

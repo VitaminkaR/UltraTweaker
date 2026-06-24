@@ -1,7 +1,9 @@
 ﻿using BepInEx;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace UltraTweaker
@@ -89,7 +91,7 @@ namespace UltraTweaker
         }
     }
 
-    public class UltrakillUtils
+    public static class UltrakillUtils
     {
         public static GameObject NearestEnemy(Vector3 point, float maxDistance)
         {
@@ -113,12 +115,10 @@ namespace UltraTweaker
 
     public class DisableDoubleRender : MonoBehaviour
     {
-        private EnemyIdentifier eid;
         private DoubleRender[] dr;
 
         public void Start()
         {
-            eid = null;
             dr = null;
         }
 

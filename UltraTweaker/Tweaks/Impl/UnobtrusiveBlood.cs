@@ -1,12 +1,5 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
-using UltraTweaker.UIElements.Impl;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using PluginConfig.API;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -15,13 +8,11 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private Harmony _harmony = new($"{UltraTweaker.GUID}.unobtrusive_blood");
 
-        public UnobtrusiveBlood()
+        private static SubSettingsCreator.IntSettingValues transparency = new(0, 100, 44);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "transparency", new IntSubsetting(this, new("Blood Opacity", "transparency", "How transparent the blood is."),
-                    new SliderIntSubsettingElement("{0}%"), 44, 100, 0) },
-            };
+            SubSettingsCreator.CreateInt(this, "Blood Opacity", division, transparency);
         }
 
         public override void OnTweakEnabled()
@@ -43,7 +34,7 @@ namespace UltraTweaker.Tweaks.Impl
             [HarmonyPatch(typeof(ScreenBlood), nameof(ScreenBlood.Start)), HarmonyPostfix]
             private static void ChangeOpacity(ScreenBlood __instance)
             {
-                __instance.clr.a = GetInstance<UnobtrusiveBlood>().Subsettings["transparency"].GetValue<int>() / 100f;
+                __instance.clr.a = transparency.Value / 100f;
             }
         }
     }

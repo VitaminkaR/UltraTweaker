@@ -1,12 +1,8 @@
-﻿using HarmonyLib;
+﻿using PluginConfig.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UltraTweaker.Subsettings;
-using UltraTweaker.UIElements;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -57,7 +53,10 @@ namespace UltraTweaker.Tweaks
             }
         }
 
-        public Dictionary<string, Subsetting> Subsettings = new();
+        public virtual void CreateSubSettingsUI(ConfigDivision division)
+        {
+
+        }
 
         /// <summary>
         /// Used to get the instance of the tweak.
@@ -98,22 +97,6 @@ namespace UltraTweaker.Tweaks
 
         private bool _isEnabled = false;
 
-        /// <summary>
-        /// The current UI element for this tweak.
-        /// </summary>
-        public TweakUIElement Element
-        {
-            get
-            {
-                if (_element == null)
-                {
-                    _element = new(this);
-                }
-                return _element;
-            }
-        }
-
-        private TweakUIElement _element;
 
         /// <summary>
         /// Called whenever the tweak is toggled on.
@@ -167,19 +150,6 @@ namespace UltraTweaker.Tweaks
             };
 
             return !NonGameplay.Contains(SceneHelper.CurrentScene);
-        }
-
-        /// <summary>
-        /// Enables or disables all the controls for the tweak.
-        /// </summary>
-        public void SetControls(bool active)
-        {
-            _element.SetControlsActive(active);
-
-            foreach (Subsetting sub in Subsettings.Values)
-            {
-                sub.Element.SetControlsActive(active);
-            }
         }
     }
 }

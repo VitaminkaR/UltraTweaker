@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
-using System;
+using PluginConfig.API;
 using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -15,23 +12,17 @@ namespace UltraTweaker.Tweaks.Impl
         private Harmony _harmony = new($"{UltraTweaker.GUID}.viewmodel_transform");
         private static Dictionary<GameObject, Vector3> _originalScale = new();
 
-        public ViewmodelTransform()
+        private static SubSettingsCreator.IntSettingValues viewmodelFov = new(50, 150, 90);
+        private static SubSettingsCreator.IntSettingValues viewmodelSizeMultiplier = new(0, 125, 100);
+        private static SubSettingsCreator.BoolSettingValues viewmodelBob = new(true);
+        private static SubSettingsCreator.BoolSettingValues viewmodelTilt = new(true);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "viewmodel_fov", new IntSubsetting(this, new("FOV", "viewmodel_fov", "What is the FOV of the viewmodel?"),
-                    new SliderIntSubsettingElement("{0}"), 90, 150, 50) },
-
-                { "viewmodel_size_multiplier", new IntSubsetting(this, new("Size", "viewmodel_size_multiplier", "How big is the viewmodel?"),
-                    new SliderIntSubsettingElement("{0}%"), 100, 125, 0) },
-
-                { "viewmodel_bob", new BoolSubsetting(this, new("Bobbing", "viewmodel_bob", "Does the viewmodel bob when you walk?"),
-                    new BoolSubsettingElement(), true)  },
-
-                { "viewmodel_tilt", new BoolSubsetting(this, new("Aim-assist Tilt", "viewmodel_tilt", "Does the viewmodel tilt with aim-assist?"),
-                    new BoolSubsettingElement(), true)  }
-
-            };
+            SubSettingsCreator.CreateInt(this, "FOV", division, viewmodelFov);
+            SubSettingsCreator.CreateInt(this, "Size", division, viewmodelSizeMultiplier);
+            SubSettingsCreator.CreateBool(this, "Bobbing", division, viewmodelBob);
+            SubSettingsCreator.CreateBool(this, "Aim-assist Tilt", division, viewmodelTilt);
         }
 
         public override void OnTweakEnabled()
@@ -78,7 +69,7 @@ namespace UltraTweaker.Tweaks.Impl
             if (NewMovement.Instance != null)
             {
                 NewMovement.Instance.gameObject.ChildByName("Main Camera").ChildByName("HUD Camera").GetComponent<Camera>().fieldOfView
-                    = Subsettings["viewmodel_fov"].GetValue<int>();
+                    = viewmodelFov.Value;
             }
         }
 
@@ -102,8 +93,8 @@ namespace UltraTweaker.Tweaks.Impl
         {
             if (GunControl.Instance != null)
             {
-                GunControl.Instance.GetComponent<WalkingBob>().enabled = GetInstance<ViewmodelTransform>().Subsettings["viewmodel_bob"].GetValue<bool>();
-                GunControl.Instance.GetComponent<RotateToFaceFrustumTarget>().enabled = GetInstance<ViewmodelTransform>().Subsettings["viewmodel_tilt"].GetValue<bool>();
+                GunControl.Instance.GetComponent<WalkingBob>().enabled = viewmodelBob.Value;
+                GunControl.Instance.GetComponent<RotateToFaceFrustumTarget>().enabled = viewmodelTilt.Value;
             }
         }
 
@@ -114,7 +105,7 @@ namespace UltraTweaker.Tweaks.Impl
             {
                 if (__instance.transform.localScale == Vector3.one)
                 {
-                    float size = GetInstance<ViewmodelTransform>().Subsettings["viewmodel_size_multiplier"].GetValue<int>();
+                    float size = viewmodelSizeMultiplier.Value;
 
                     // this breaks parries help idk why 
 
@@ -136,7 +127,7 @@ namespace UltraTweaker.Tweaks.Impl
                     {
                         _originalScale.Add(__instance.gameObject, __instance.gameObject.transform.localScale);
                     }
-                    __instance.gameObject.transform.localScale = _originalScale[__instance.gameObject] * GetInstance<ViewmodelTransform>().Subsettings["viewmodel_size_multiplier"].GetValue<int>() / 100;
+                    __instance.gameObject.transform.localScale = _originalScale[__instance.gameObject] * viewmodelSizeMultiplier.Value / 100;
                 } else
                 {
                     foreach (GameObject child in __instance.gameObject.ChildrenList())
@@ -146,7 +137,7 @@ namespace UltraTweaker.Tweaks.Impl
                             _originalScale.Add(child, child.transform.localScale);
                         }
 
-                        child.transform.localScale = _originalScale[child] * GetInstance<ViewmodelTransform>().Subsettings["viewmodel_size_multiplier"].GetValue<int>() / 100;
+                        child.transform.localScale = _originalScale[child] * viewmodelSizeMultiplier.Value / 100;
                     }
                 }
             }

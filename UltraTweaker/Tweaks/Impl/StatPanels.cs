@@ -1,13 +1,12 @@
 ﻿using HarmonyLib;
+using PluginConfig.API;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UltraTweaker.Handlers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UltraTweaker.Handlers;
-using UltraTweaker.Subsettings.Impl;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -42,35 +41,26 @@ namespace UltraTweaker.Tweaks.Impl
             public DateTime time;
             public float dmg;
 
-            public Hit (float dmg)
+            public Hit(float dmg)
             {
                 this.dmg = dmg;
                 time = DateTime.Now;
             }
         }
 
-        public StatPanels()
+        private static SubSettingsCreator.BoolSettingValues info = new(false);
+        private static SubSettingsCreator.BoolSettingValues weapons = new(false);
+        private static SubSettingsCreator.BoolSettingValues dps = new(false);
+        private static SubSettingsCreator.BoolSettingValues speed = new(false);
+        private static SubSettingsCreator.IntSettingValues size = new(0, 200, 100);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "info", new BoolSubsetting(this, new("Info Panel", "info", "Shows your health and stamina."), 
-                    new BoolSubsettingElement(), false)  },
-
-                { "weapons", new BoolSubsetting(this, new("Weapon Panel", "weapons", "Shows your weapon, fist, and rail charge."), 
-                    new BoolSubsettingElement(), false)  },
-
-                { "dps", new BoolSubsetting(this, new("DPS Panel", "dps", "Shows your damage per second."), 
-                    new BoolSubsettingElement(), false)  },
-
-                { "speed", new BoolSubsetting(this, new("Speed Panel", "speed", "Shows your speed."), 
-                    new BoolSubsettingElement(), false)  },
-
-                { "speed_mode", new IntSubsetting(this, new("Speed: Mode", "speed_mode", "Should it show total speed, or speed in each direction?"),
-                    new DropdownIntSubsettingElement(new List<string>() { "(x) m/s", "(x, y, z) m/s"} ), 0, 1, 0)  },
-
-                { "size", new IntSubsetting(this, new("Size", "size", "How big the panels are."), 
-                    new SliderIntSubsettingElement("{0}%"), 100, 200, 0) }
-            };
+            SubSettingsCreator.CreateBool(this, "Info Panel", division, info);
+            SubSettingsCreator.CreateBool(this, "Weapon Panel", division, weapons);
+            SubSettingsCreator.CreateBool(this, "DPS Panel", division, dps);
+            SubSettingsCreator.CreateBool(this, "Speed Panel", division, speed);
+            SubSettingsCreator.CreateInt(this, "Size", division, size);
         }
 
         public override void OnTweakEnabled()
@@ -91,10 +81,10 @@ namespace UltraTweaker.Tweaks.Impl
         {
             if (CanvasController.Instance != null && IsGameplayScene() && _currentPanels != null)
             {
-                _dps.SetActive(Subsettings["dps"].GetValue<bool>());
-                _speed.SetActive(Subsettings["speed"].GetValue<bool>());
-                _info.SetActive(Subsettings["info"].GetValue<bool>());
-                _weapons.SetActive(Subsettings["weapons"].GetValue<bool>());
+                _dps.SetActive(dps.Value);
+                _speed.SetActive(speed.Value);
+                _info.SetActive(info.Value);
+                _weapons.SetActive(weapons.Value);
 
                 foreach (GameObject row in _currentPanels.ChildrenList())
                 {
@@ -110,14 +100,15 @@ namespace UltraTweaker.Tweaks.Impl
                     if (activeAmount == 0)
                     {
                         row.SetActive(false);
-                    } else
+                    }
+                    else
                     {
                         row.SetActive(true);
                     }
                 }
 
                 _currentPanels.transform.SetAsFirstSibling();
-                _currentPanels.transform.localScale = Vector3.one * Subsettings["size"].GetValue<int>() / 100f;
+                _currentPanels.transform.localScale = Vector3.one * size.Value / 100f;
             }
         }
 
@@ -212,24 +203,19 @@ namespace UltraTweaker.Tweaks.Impl
 
                 if (_speed.activeSelf)
                 {
-                    if (Subsettings["speed_mode"].GetValue<int>() == 0)
-                    {
-                        _speedText.fontSize = 72;
-                        _speedText.text = Math.Round(NewMovement.Instance.rb.velocity.magnitude, 2).ToString();
-                    } else
-                    {
-                        _speedText.fontSize = 42;
-                        Vector3 velo = NewMovement.Instance.rb.velocity;
-                        string text = new Vector3(velo.x, velo.y, velo.z).ToString();
-                        text = text.Replace("(", "").Replace(")", "").Replace(", ", "\n");
+                    _speedText.fontSize = 42;
+                    Vector3 velo = NewMovement.Instance.rb.velocity;
+                    string text = new Vector3(velo.x, velo.y, velo.z).ToString();
+                    StringBuilder builder = new StringBuilder(text.Replace("(", "").Replace(")", "").Replace(", ", "\n"));
+                    builder.Append(" TS: ");
+                    builder.Append(Math.Round(velo.magnitude, 2).ToString());
 
-                        _speedText.text = text;
-                    }
+                    _speedText.text = builder.ToString();
                 }
             }
         }
 
-        public class PanelPatches
+        public static class PanelPatches
         {
             [HarmonyPatch(typeof(EnemyIdentifier), nameof(EnemyIdentifier.DeliverDamage)), HarmonyPrefix]
             private static void SetHealthBefore(EnemyIdentifier __instance, out float __state)

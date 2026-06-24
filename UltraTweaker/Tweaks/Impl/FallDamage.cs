@@ -1,10 +1,5 @@
-﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Handlers;
+﻿using UltraTweaker.Handlers;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace UltraTweaker.Tweaks.Impl
 {

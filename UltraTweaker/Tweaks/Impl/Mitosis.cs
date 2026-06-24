@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
-using System;
+using PluginConfig.API;
 using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -15,13 +12,11 @@ namespace UltraTweaker.Tweaks.Impl
         private Harmony _harmony = new($"{UltraTweaker.GUID}.mutator_mitosis");
         public static List<ActivateNextWave> AlreadyMultiplied = new();
 
-        public Mitosis()
+        private static SubSettingsCreator.IntSettingValues enemyAmount = new(2, 10, 2);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "enemy_amount", new IntSubsetting(this, new Metadata("Amount", "enemy_amount", "The amount of enemies to clone"),
-                    new SliderIntSubsettingElement(), 2, 10, 2) }
-            };
+            SubSettingsCreator.CreateInt(this, "Amount", division, enemyAmount);
         }
 
         public override void OnTweakEnabled()
@@ -49,7 +44,7 @@ namespace UltraTweaker.Tweaks.Impl
             {
                 if (!__instance.gameObject.name.Contains("(MITOSISED)"))
                 {
-                    for (int i = 0; i < GetInstance<Mitosis>().Subsettings["enemy_amount"].GetValue<int>() - 1; i++)
+                    for (int i = 0; i < enemyAmount.Value - 1; i++)
                     {
                         GameObject obj = Instantiate(__instance.gameObject, __instance.transform.parent);
 
@@ -75,7 +70,7 @@ namespace UltraTweaker.Tweaks.Impl
                 if (!goreZone.gameObject.name.Contains("(Clone)"))
                     return;
 
-                __instance.enemyCount *= GetInstance<Mitosis>().Subsettings["enemy_amount"].GetValue<int>();
+                __instance.enemyCount *= enemyAmount.Value;
 
                 foreach (DeathMarker deathMarker in __instance.gameObject.GetComponentsInChildren<DeathMarker>(true))
                 {

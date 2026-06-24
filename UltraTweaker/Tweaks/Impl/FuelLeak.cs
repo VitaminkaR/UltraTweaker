@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UltraTweaker.Subsettings.Impl;
+﻿using PluginConfig.API;
 using UnityEngine;
-using UltraTweaker.UIElements.Impl;
 
 namespace UltraTweaker.Tweaks.Impl
 {
@@ -12,20 +8,18 @@ namespace UltraTweaker.Tweaks.Impl
     {
         private float _toRemove = 0;
 
-        public FuelLeak()
+        private static SubSettingsCreator.IntSettingValues drain = new(0, 25, 1);
+
+        public override void CreateSubSettingsUI(ConfigDivision division)
         {
-            Subsettings = new()
-            {
-                { "drain", new IntSubsetting(this, new Metadata("Damage Per Second", "drain", "HP drained per second."),
-                    new SliderIntSubsettingElement("{0}"), 0, 25, 1) },
-            };
+            SubSettingsCreator.CreateInt(this, "Drain", division, drain);
         }
 
         public void Update()
         {
             if (NewMovement.Instance != null && StatsManager.Instance.timer && GunControl.Instance.activated)
             {
-                _toRemove += Time.deltaTime * Subsettings["drain"].GetValue<int>();
+                _toRemove += Time.deltaTime * drain.Value;
 
                 if ((int)_toRemove >= 1)
                 {
