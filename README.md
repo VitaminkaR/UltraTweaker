@@ -1,15 +1,15 @@
 # UltraTweaker
 An extensible ULTRAKILL mod which adds extra settings, and mutators.
 
+# Rework
+A lot of code has been changed. The interface has been rewritten using the [Plugin Configurator Lib](https://github.com/eternalUnion/UKPluginConfigurator). The architecture was greatly simplified.
+
+The plugin works on BepInEx version 5.4.23.5 and on the game version from April 26, 2026
+
 ## Installation
-Go to [Thunderstore](https://thunderstore.io/c/ultrakill/p/Waff1e/UltraTweaker/) and install it with r2modman. Alternatively, press Manual Download, and install it yourself.
-
-## Development
-This is my first API, so it might not be very good.
-
-There is a template project included (UltraTweaker Extension Example, and UltraTweaker Extension Assets for AssetBundles). 
-
-Reference that, and see how I do it in this mod. I will try to make docs eventually.
+1. Install BepInEx 5.4.23.5 [BepInEx Releases](https://github.com/BepInEx/BepInEx/releases) [How to install](https://docs.bepinex.dev/articles/user_guide/installation/index.html)
+2. Install [Plugin Configurator Lib](https://github.com/eternalUnion/UKPluginConfigurator)
+3. Install this plugin [Releases](https://github.com/VitaminkaR/UltraTweaker/releases/tag/UltraTweaker)
 
 ## Tweaks
 
