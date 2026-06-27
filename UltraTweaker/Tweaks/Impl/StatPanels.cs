@@ -138,7 +138,7 @@ namespace UltraTweaker.Tweaks.Impl
                 _hpText = _info.ChildByName("HP").GetComponent<Text>();
                 _staminaText = _info.ChildByName("Stamina").GetComponent<Text>();
                 _gunImage = _weapons.ChildByName("Gun").GetComponent<Image>();
-                _punchImage = _weapons.ChildByName("Fist").GetComponent<Image>();
+                //_punchImage = _weapons.ChildByName("Fist").GetComponent<Image>();
                 _railSlider = _weapons.ChildByName("Slider").GetComponent<Slider>();
 
                 OnSubsettingUpdate();
@@ -191,8 +191,8 @@ namespace UltraTweaker.Tweaks.Impl
                 {
                     _gunImage.sprite = WeaponHUD.Instance.img.sprite;
                     _gunImage.color = WeaponHUD.Instance.img.color;
-                    _punchImage.sprite = FistControl.Instance.fistIcon.sprite;
-                    _punchImage.color = FistControl.Instance.fistIcon.color;
+                    //_punchImage.sprite = FistControl.Instance.fistIcon.sprite;
+                    //_punchImage.color = FistControl.Instance.fistIcon.color;
                     _railSlider.value = WeaponCharges.Instance.raicharge;
                 }
 
