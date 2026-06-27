@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using UltraTweaker.Tweaks;
 using UnityEngine;
+using static UnityEngine.ResourceManagement.Util.BinaryStorageBuffer.TypeSerializer;
 namespace UltraTweaker.Handlers
 {
     public static class SettingUIHandler
@@ -47,12 +48,18 @@ namespace UltraTweaker.Handlers
                 TweakMetadata meta = Attribute.GetCustomAttribute(tweak.GetType(), typeof(TweakMetadata)) as TweakMetadata;
                 ConfigPanel panel = subPanels[meta.PageId];
                 ConfigHeader header = new ConfigHeader(panel, meta.Name);
-
+                
                 BoolField toggle = new BoolField(panel, "TOGGLE", $"{meta.Name}_toggle", false);
                 tweak.IsEnabled = toggle.value;
-                toggle.onValueChange += (BoolField.BoolValueChangeEvent data) => tweak.IsEnabled = data.value;
 
                 ConfigDivision division = new ConfigDivision(panel, $"{meta.Name}_division");
+                division.interactable = toggle.value;
+                toggle.onValueChange += (BoolField.BoolValueChangeEvent data) =>
+                {
+                    tweak.IsEnabled = data.value;
+                    division.interactable = data.value;
+                };
+
                 tweak.CreateSubSettingsUI(division);
             }
         }
