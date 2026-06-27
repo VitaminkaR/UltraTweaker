@@ -37,6 +37,7 @@ namespace UltraTweaker.Tweaks
                def,
                min,
                max);
+            setter(option.value);
             option.onValueChange += (IntField.IntValueChangeEvent e) =>
             {
                 setter(e.value);
@@ -57,6 +58,7 @@ namespace UltraTweaker.Tweaks
                values.Default,
                values.Min,
                values.Max);
+            values.Value = option.value;
             option.onValueChange += (IntField.IntValueChangeEvent e) =>
             {
                 values.Value = e.value;
@@ -96,6 +98,7 @@ namespace UltraTweaker.Tweaks
                def,
                min,
                max);
+            setter(option.value);
             option.onValueChange += (FloatField.FloatValueChangeEvent e) =>
             {
                 setter(e.value);
@@ -116,6 +119,7 @@ namespace UltraTweaker.Tweaks
                values.Default,
                values.Min,
                values.Max);
+            values.Value = option.value;
             option.onValueChange += (FloatField.FloatValueChangeEvent e) =>
             {
                 values.Value = e.value;
@@ -147,6 +151,7 @@ namespace UltraTweaker.Tweaks
                name,
                $"{name}_{tweak.GetType().Name}_option",
                def);
+            setter(option.value);
             option.onValueChange += (BoolField.BoolValueChangeEvent e) =>
             {
                 setter(e.value);
@@ -165,6 +170,7 @@ namespace UltraTweaker.Tweaks
                name,
                $"{name}_{tweak.GetType().Name}_option",
                values.Default);
+            values.Value = option.value;
             option.onValueChange += (BoolField.BoolValueChangeEvent e) =>
             {
                 values.Value = e.value;

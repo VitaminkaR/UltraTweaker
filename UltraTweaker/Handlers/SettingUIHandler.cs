@@ -49,6 +49,7 @@ namespace UltraTweaker.Handlers
                 ConfigHeader header = new ConfigHeader(panel, meta.Name);
 
                 BoolField toggle = new BoolField(panel, "TOGGLE", $"{meta.Name}_toggle", false);
+                tweak.IsEnabled = toggle.value;
                 toggle.onValueChange += (BoolField.BoolValueChangeEvent data) => tweak.IsEnabled = data.value;
 
                 ConfigDivision division = new ConfigDivision(panel, $"{meta.Name}_division");
