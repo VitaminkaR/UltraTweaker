@@ -1,7 +1,0 @@
-ManifestFileVersion: 0
-CRC: 869493095
-AssetBundleManifest:
-  AssetBundleInfos:
-    Info_0:
-      Name: template_assets.bundle
-      Dependencies: {}
